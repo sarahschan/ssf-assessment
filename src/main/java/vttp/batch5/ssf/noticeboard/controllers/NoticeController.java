@@ -1,6 +1,11 @@
 package vttp.batch5.ssf.noticeboard.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.validation.Valid;
 import vttp.batch5.ssf.noticeboard.models.Notice;
 import vttp.batch5.ssf.noticeboard.services.NoticeService;
+import vttp.batch5.ssf.noticeboard.services.StatusService;
 
 // Use this class to write your request handlers
 
@@ -22,8 +29,9 @@ public class NoticeController {
     @Autowired
     NoticeService noticeService;
 
+    @Autowired
+    StatusService statusService;
 
-    // Task 1 - Landing page
     @GetMapping()
     public String view1(Model model) {
         
@@ -35,12 +43,9 @@ public class NoticeController {
     }
 
 
-    // Task 2 - Write a request handler in NoticeController to process the submission
     @PostMapping("/notice")
     public String handleSubmit(@Valid @ModelAttribute("notice") Notice notice, BindingResult result, Model model) throws Exception{
         
-        System.out.println("Recieved from form: " + notice);
-
         // check for errors
         if (result.hasErrors()){
             model.addAttribute("notice", notice);
@@ -60,6 +65,15 @@ public class NoticeController {
             return "view3";
         }
        
+    }
+
+
+    @GetMapping(path = "/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> getStatus() {
+
+        return statusService.checkStatus();
+
     }
 
 }
