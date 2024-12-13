@@ -49,9 +49,16 @@ public class NoticeController {
 
 
         // if no errors, make a REST API call to the notice publishing endpoint to publish the notice
-        noticeService.postToNoticeServer(notice);
+        try {
+            
+            noticeService.postToNoticeServer(notice);
+
+        } catch (Exception e) {
+            return "view3";
+        }
 
         return "view2";
+
         
     }
 

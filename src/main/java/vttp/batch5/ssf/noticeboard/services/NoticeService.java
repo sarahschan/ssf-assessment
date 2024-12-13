@@ -1,7 +1,10 @@
 package vttp.batch5.ssf.noticeboard.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,8 +14,8 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-import vttp.batch5.ssf.noticeboard.constants.Constant;
 import vttp.batch5.ssf.noticeboard.models.Notice;
+import vttp.batch5.ssf.noticeboard.repositories.NoticeRepository;
 import vttp.batch5.ssf.noticeboard.utilities.Utilities;
 
 @Service
@@ -22,10 +25,15 @@ public class NoticeService {
 
 	@Autowired
 	Utilities utilities;
+
+	@Autowired
+	NoticeRepository noticeRepository;
+
+	@Value("${publishing.host}")
+  	private String publishingHost;
+
 	// Task 3 - Make a REST API call to the notice publishing endpoint to publish the notice
 	public void postToNoticeServer(Notice notice) throws Exception {
-
-		System.out.println("Now in postToNoticeServer");
 
 		// Build the categories array
 		JsonArrayBuilder categoriesArrayBuilder = Json.createArrayBuilder();
@@ -45,30 +53,38 @@ public class NoticeService {
 										.add("text", notice.getText())
 										.build();
 
-		System.out.println(requestBody);
-
 		// Set the headers
 		HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/json");
 			headers.set("Accept", "application/json");
 
-		// Create a request entity to send to the API
-		RequestEntity<String> request = RequestEntity.post(Constant.PUBLISHING_URL + "notice")
+		// Create the request entity
+		RequestEntity<String> request = RequestEntity.post(publishingHost)
 													 .headers(headers)
 													 .body(requestBody.toString());
 
-
 		// Use the rest template to send the POST request to the API													 
-		System.out.println("Attempting call to: " + Constant.PUBLISHING_URL);
 		try {
+			
 			ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
 			System.out.println(response.getStatusCode());
-			System.out.println(response.getHeaders());
-			System.out.println(response.getBody());
+
+			if (response.getStatusCode() != HttpStatusCode.valueOf(200)) {
+				throw new Exception("Post failed " + response.getStatusCode() + response.getBody());
+			}
+
+			// save the response body to redis
+			try {
+				noticeRepository.insertNotices(response.getBody());
+
+			} catch (Exception e) {
+				throw new Exception("Save to redis failed: " + e.getMessage());
+			}
 
 		} catch (Exception e) {
-			throw new Exception("Call failed: " + e.getMessage());
+			throw new Exception("Post failed: " + e.getMessage());
 		}
+		
 	}
 }
