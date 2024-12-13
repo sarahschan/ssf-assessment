@@ -51,16 +51,15 @@ public class NoticeController {
         // if no errors, make a REST API call to the notice publishing endpoint to publish the notice
         try {
             
-            noticeService.postToNoticeServer(notice);
+            String postID = noticeService.postToNoticeServer(notice);
+            model.addAttribute("postID", postID);
+            return "view2";
 
         } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
             return "view3";
         }
-
-        return "view2";
-
-        
+       
     }
-
 
 }
