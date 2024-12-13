@@ -17,7 +17,8 @@ public class NoticeRepository {
 	
 	public void insertNotices(String postID, String payload) {
 		
-		// redis-cli command: hset myhashmap <id> <Json Payload as String>
+		// redis-cli command: hset <RedisKey> <HashKey> <HashValue>
+		// e.g. hset success <id> <json payload as string>
 		template.opsForHash().put("success", postID, payload);
 		
 	}
