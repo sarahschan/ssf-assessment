@@ -37,7 +37,7 @@ public class NoticeController {
 
     // Task 2 - Write a request handler in NoticeController to process the submission
     @PostMapping("/notice")
-    public String handleSubmit(@Valid @ModelAttribute("notice") Notice notice, BindingResult result, Model model){
+    public String handleSubmit(@Valid @ModelAttribute("notice") Notice notice, BindingResult result, Model model) throws Exception{
         
         System.out.println("Recieved from form: " + notice);
 
@@ -49,7 +49,7 @@ public class NoticeController {
 
 
         // if no errors, make a REST API call to the notice publishing endpoint to publish the notice
-
+        noticeService.postToNoticeServer(notice);
 
         return "view2";
         
