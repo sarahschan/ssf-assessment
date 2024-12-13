@@ -24,11 +24,11 @@ public class StatusService {
             template.randomKey();
         } catch (Exception e) {
 
-            // Return a 503 Service Unavailable response with an empty JSON body
+            // UNHEALTHY: 503
             return ResponseEntity.status(503).headers(headers).body("{}");
         }
 
-        // Return a 200 OK response with an empty JSON body
+        // HEALTHY: 200
         return ResponseEntity.status(200).headers(headers).body("{}");
 
     }

@@ -43,7 +43,6 @@ public class NoticeService {
 			categoriesArrayBuilder.add(category);
 		}
 		JsonArray categoriesJsonArray = categoriesArrayBuilder.build();
-		System.out.println(categoriesJsonArray.toString());		
 
 		// Build the request body
 		JsonObject requestBody = Json.createObjectBuilder()
@@ -69,8 +68,6 @@ public class NoticeService {
 		try {
 			
 			ResponseEntity<String> response = restTemplate.exchange(request, String.class);
-
-			System.out.println(response.getStatusCode());
 
 			if (response.getStatusCode() != HttpStatusCode.valueOf(200)) {				
 				throw new Exception();
@@ -112,9 +109,8 @@ public class NoticeService {
 				System.out.println("Cannot parse this error message");
 			}
 			
-			throw new Exception("I/O error on POST request for \"http://localhost:3000/notice\": " + errorMessage, e);
+			throw new Exception("I/O error on POST request for \"https://loyal-smile-production.up.railway.app/notice\": " + errorMessage, e);
 
 		}
-		
 	}
 }

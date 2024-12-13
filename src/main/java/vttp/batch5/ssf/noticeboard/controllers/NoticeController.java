@@ -1,9 +1,6 @@
 package vttp.batch5.ssf.noticeboard.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,7 +17,6 @@ import vttp.batch5.ssf.noticeboard.models.Notice;
 import vttp.batch5.ssf.noticeboard.services.NoticeService;
 import vttp.batch5.ssf.noticeboard.services.StatusService;
 
-// Use this class to write your request handlers
 
 @Controller
 @RequestMapping()
@@ -60,6 +56,7 @@ public class NoticeController {
             model.addAttribute("postID", postID);
             return "view2";
 
+        // Any errors during API call and/or redis save
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "view3";
